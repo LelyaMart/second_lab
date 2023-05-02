@@ -64,12 +64,21 @@ int main(int argc, char *argv[]) {
         }
         else if (pid == 0) {
             if (i == 0) {
-                dup2(pipefds[i][1], STDOUT_FILENO);
+                if (dup2(pipefds[i][1], STDOUT_FILENO) < 0) {
+                    printf("Unable to duplicate file descriptor.");
+                    exit(EXIT_FAILURE);
+                }
             } else if (i == num_commands - 1) {
-                dup2(pipefds[i - 1][0], STDIN_FILENO);
+                if (dup2(pipefds[i - 1][0], STDIN_FILENO) < 0) {
+                    printf("Unable to duplicate file descriptor.");
+                    exit(EXIT_FAILURE);
+                }
             } else {
-                dup2(pipefds[i - 1][0], STDIN_FILENO);
-                dup2(pipefds[i][1], STDOUT_FILENO);
+                if (dup2(pipefds[i - 1][0], STDIN_FILENO) < 0 || 
+                    dup2(pipefds[i][1], STDOUT_FILENO) < 0)  {
+                    printf("Unable to duplicate file descriptor.");
+                    exit(EXIT_FAILURE);
+                }
             }
             for (int j = 0; j < num_commands - 1; j++) {
                 close(pipefds[j][0]);
