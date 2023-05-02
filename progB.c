@@ -28,7 +28,12 @@ int main(int argc, char *argv[]) {
 
     if (argc > 1) {
         int parent_pid = atoi(argv[1]);
-        kill(parent_pid, SIGUSR1);
+        if (parent_pid <= 0) {
+            printf("Atoi error\n");
+        }
+        else {
+            kill(parent_pid, SIGUSR1);
+        }
     }
 
     commands[num_commands][0] = strtok(input_buffer, "|");
